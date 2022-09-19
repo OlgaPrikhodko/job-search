@@ -8,10 +8,10 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: "HeaderContainer",
-};
-</script>
+<script lang="ts">
+import { defineComponent } from "vue";
 
-<style></style>
+export default defineComponent({
+  name: "HeaderContainer",
+});
+</script>

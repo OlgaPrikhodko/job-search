@@ -39,29 +39,32 @@
   </form>
 </template>
 
-<script>
+<script lang="ts">
+import { ref, defineComponent } from "vue";
+import { useRouter } from "vue-router";
+
 import ActionButton from "@/components/Shared/ActionButton.vue";
 import TextInput from "@/components/Shared/TextInput.vue";
 
-export default {
+export default defineComponent({
   name: "JobSearchForm",
   components: { ActionButton, TextInput },
-  data() {
-    return {
-      role: "",
-      location: "",
-      url: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/95/Vue.js_Logo_2.svg/2367px-Vue.js_Logo_2.svg.png",
-    };
-  },
-  methods: {
-    searchForJobs() {
-      this.$router.push({
+  setup() {
+    const router = useRouter();
+
+    const role = ref("");
+    const location = ref("");
+
+    const searchForJobs = () => {
+      router.push({
         name: "JobResults",
-        query: { role: this.role, location: this.location },
+        query: { role: role.value, location: location.value },
       });
-    },
+    };
+
+    return { role, location, searchForJobs };
   },
-};
+});
 </script>
 
 <style></style>

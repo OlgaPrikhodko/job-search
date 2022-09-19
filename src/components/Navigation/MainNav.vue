@@ -32,7 +32,6 @@
             data-test="login-button"
             @click="logIn()"
           />
-          <!-- @click="logIn" -->
         </div>
       </div>
 
@@ -41,16 +40,17 @@
   </header>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from "vue";
 import { mapMutations, mapState } from "vuex";
 
 import ActionButton from "@/components/Shared/ActionButton.vue";
 import ProfileImage from "@/components/Navigation/ProfileImage.vue";
 import Subnav from "@/components/Navigation/Subnav.vue";
 
-import { LOGIN_USER } from "@/store/constants.js";
+import { LOGIN_USER } from "@/store/constants";
 
-export default {
+export default defineComponent({
   name: "MainNav",
   components: { ActionButton, ProfileImage, Subnav },
   data() {
@@ -63,7 +63,6 @@ export default {
         { text: "Students", url: "/" },
         { text: "Jobs", url: "/jobs/results" },
       ],
-      // isLoggedIn: false,
     };
   },
   computed: {
@@ -74,20 +73,9 @@ export default {
       };
     },
     ...mapState(["isLoggedIn"]),
-    // ...mapState({
-    //   isLoggedIn: state => state.isLoggedIn,
-    //   // isLoggedIn: "isLoggedIn",
-    // }),
-    // isLoggedIn() {
-    //   return this.$store.state.isLoggedIn;
-    // },
   },
   methods: {
     ...mapMutations({ logIn: LOGIN_USER }),
-    // ...mapMutations([LOGIN_USER]),
-    // logIn() {
-    //   this.$store.commit("LOGIN_USER");
-    // },
   },
-};
+});
 </script>

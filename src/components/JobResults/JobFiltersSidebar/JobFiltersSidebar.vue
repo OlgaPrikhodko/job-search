@@ -2,35 +2,63 @@
   <div
     class="flex flex-col p-4 bg-white border-r border-solid border-brand-grey-1 w-96"
   >
-    <section>
-      <div class="flex flex-row justify-between">
-        <h3 class="my-4 text-base font-semibold">What do you want to do?</h3>
-        <div class="flex items-center test-sm">
-          <action-button text="Clear Filters" type="secondary" />
-        </div>
-      </div>
+    <section class="pb-5">
+      <job-filters-sidebar-prompt />
 
-      <job-filters-sidebar-job-types />
-      <job-filters-sidebar-organizations />
+      <accordion header="Skills and Qualifications">
+        <job-filters-sidebar-skills />
+      </accordion>
+
+      <accordion header="Degrees">
+        <job-filters-sidebar-degrees />
+      </accordion>
+
+      <accordion header="Job Types">
+        <job-filters-sidebar-job-types />
+      </accordion>
+
+      <accordion header="Organizations">
+        <job-filters-sidebar-organizations />
+      </accordion>
     </section>
   </div>
 </template>
 
-<script>
-import ActionButton from "@/components/Shared/ActionButton.vue";
-// import Accordion from "@/components/Shared/Accordion.vue";
-import JobFiltersSidebarOrganizations from "@/components/JobResults/JobFiltersSidebar/JobFiltersSidebarOrganizations.vue";
+<script lang="ts">
+import { defineComponent, onMounted } from "vue";
+import { useRoute } from "vue-router";
+import { useStore } from "vuex";
+import { key } from "@/store";
+
+import { UPDATE_SKILLS_SEARCH_TERM } from "@/store/constants";
+
+import Accordion from "@/components/Shared/Accordion.vue";
+
+import JobFiltersSidebarPrompt from "@/components/JobResults/JobFiltersSidebar/JobFiltersSidebarPrompt.vue";
+import JobFiltersSidebarDegrees from "@/components/JobResults/JobFiltersSidebar/JobFiltersSidebarDegrees.vue";
 import JobFiltersSidebarJobTypes from "@/components/JobResults/JobFiltersSidebar/JobFiltersSidebarJobTypes.vue";
 
-export default {
+import JobFiltersSidebarOrganizations from "@/components/JobResults/JobFiltersSidebar/JobFiltersSidebarOrganizations.vue";
+import JobFiltersSidebarSkills from "@/components/JobResults/JobFiltersSidebar/JobFiltersSidebarSkills.vue";
+
+export default defineComponent({
   name: "JobFiltersSidebar",
   components: {
-    ActionButton,
-    // Accordion,
-    JobFiltersSidebarOrganizations,
+    Accordion,
+    JobFiltersSidebarSkills,
+    JobFiltersSidebarPrompt,
     JobFiltersSidebarJobTypes,
+    JobFiltersSidebarOrganizations,
+    JobFiltersSidebarDegrees,
   },
-};
+  setup() {
+    const parseSkillsSearchTerm = () => {
+      const route = useRoute();
+      const role = route.query.role || "";
+      const store = useStore(key);
+      store.commit(UPDATE_SKILLS_SEARCH_TERM, role);
+    };
+    onMounted(parseSkillsSearchTerm);
+  },
+});
 </script>
-
-<style></style>

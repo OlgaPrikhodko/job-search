@@ -1,7 +1,6 @@
 <template>
   <ul>
     <li v-for="spotlight in spotlights" :key="spotlight.id">
-      <!-- <slot :spotlight="spotlight"></slot> -->
       <slot
         :img="spotlight.img"
         :title="spotlight.title"
@@ -11,24 +10,31 @@
   </ul>
 </template>
 
-<script>
+<script lang="ts">
+import { ref, onMounted, defineComponent } from "vue";
 import axios from "axios";
 
-export default {
-  name: "Spotlight",
-  data() {
-    return {
-      spotlights: [],
-    };
-  },
-  async mounted() {
-    const baseUrl = process.env.VUE_APP_API_URL;
-    const url = `${baseUrl}/spotlights
-    `;
-    const response = await axios.get(url);
-    this.spotlights = response.data;
-  },
-};
-</script>
+interface Spotlight {
+  id: number;
+  img: string;
+  title: string;
+  description: string;
+}
 
-<style></style>
+export default defineComponent({
+  name: "Spotlight",
+  setup() {
+    const spotlights = ref<Spotlight[]>([]);
+
+    const getSpotlights = async () => {
+      const baseUrl = process.env.VUE_APP_API_URL;
+      const url = `${baseUrl}/spotlights`;
+      const response = await axios.get<Spotlight[]>(url);
+      spotlights.value = response.data;
+    };
+    onMounted(getSpotlights);
+
+    return { spotlights };
+  },
+});
+</script>

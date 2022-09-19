@@ -34,45 +34,45 @@
   </main>
 </template>
 
-<script>
-import { mapActions, mapGetters } from "vuex";
+<script lang="ts">
+import { computed, onMounted, defineComponent } from "vue";
+
+import {
+  useFilteredJobs,
+  useFetchJobsDispatch,
+  useFetchDegreesDispatch,
+} from "@/store/composables";
+import useCurrentPage from "@/composables/useCurrentPage";
+import usePreviousAndNextPages from "@/composables/usePreviousAndNextPages";
 
 import JobListing from "@/components/JobResults/JobListing.vue";
-import { FETCH_JOBS, FILTERED_JOBS } from "@/store/constants.js";
 
-export default {
+import { Job } from "@/api/types";
+
+export default defineComponent({
   name: "JobListings",
   components: { JobListing },
-  computed: {
-    ...mapGetters([FILTERED_JOBS]),
-    currentPage() {
-      const pageString = this.$route.query.page || "1";
-      return parseInt(pageString);
-    },
-    previosPage() {
-      const previosPage = this.currentPage - 1;
-      const firstPage = 1;
-      return previosPage >= firstPage ? previosPage : null;
-    },
-    nextPage() {
-      const lastPage = Math.ceil(this.FILTERED_JOBS.length / 10);
-      const nextPage = this.currentPage + 1;
-      return nextPage <= lastPage ? nextPage : null;
-    },
-    displayedJobs() {
-      const pageNumber = this.currentPage;
+  setup() {
+    onMounted(useFetchJobsDispatch);
+    onMounted(useFetchDegreesDispatch);
+
+    const filteredJobs = useFilteredJobs();
+
+    const maxPage = computed(() => Math.ceil(filteredJobs.value.length / 10));
+    const currentPage = useCurrentPage();
+    const { previosPage, nextPage } = usePreviousAndNextPages(
+      currentPage,
+      maxPage
+    );
+
+    const displayedJobs = computed<Job[]>(() => {
+      const pageNumber = currentPage.value;
       const firstJobIndex = (pageNumber - 1) * 10;
       const lastJobIndex = pageNumber * 10;
-      return this.FILTERED_JOBS.slice(firstJobIndex, lastJobIndex);
-    },
-  },
-  async mounted() {
-    this.FETCH_JOBS();
-  },
-  methods: {
-    ...mapActions([FETCH_JOBS]),
-  },
-};
-</script>
+      return filteredJobs.value.slice(firstJobIndex, lastJobIndex);
+    });
 
-<style></style>
+    return { currentPage, previosPage, nextPage, displayedJobs };
+  },
+});
+</script>
